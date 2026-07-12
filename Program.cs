@@ -8,7 +8,11 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
-string originUrl = "https://dummyjson.com/";
+var argsReader = new ArgsReader(args);
+
+string originUrl = argsReader.Read("--origin") ?? "https://dummyjson.com/";
+string? portFromArgs = argsReader.Read("--port");
+int port = int.TryParse(portFromArgs, out int parsedPort) ? parsedPort : 5123;
 
 app.Map("{*catchall}", async (string? catchall, HttpContext context, CacheService<string, Request> cache, IHttpClientFactory clientFactory) =>
 {
