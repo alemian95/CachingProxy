@@ -1,18 +1,18 @@
 using CachingProxy.Models;
 using CachingProxy.Services;
 
+var argsReader = new ArgsReader(args);
+string originUrl = argsReader.Read("--origin") ?? "https://dummyjson.com/";
+string? portFromArgs = argsReader.Read("--port");
+int port = int.TryParse(portFromArgs, out int parsedPort) ? parsedPort : 5123;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<CacheService<string, Request>>();
 builder.Services.AddHttpClient();
+builder.WebHost.UseUrls($"http://localhost:{port}");
 
 var app = builder.Build();
-
-var argsReader = new ArgsReader(args);
-
-string originUrl = argsReader.Read("--origin") ?? "https://dummyjson.com/";
-string? portFromArgs = argsReader.Read("--port");
-int port = int.TryParse(portFromArgs, out int parsedPort) ? parsedPort : 5123;
 
 app.Map("{*catchall}", async (string? catchall, HttpContext context, CacheService<string, Request> cache, IHttpClientFactory clientFactory) =>
 {
