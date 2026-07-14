@@ -1,5 +1,3 @@
-using CachingProxy.Models;
-
 namespace CachingProxy.Services;
 
 class CacheService<KType, VType> where KType : notnull
@@ -18,7 +16,7 @@ class CacheService<KType, VType> where KType : notnull
         this.cache = new Dictionary<KType, VType>();
     }
 
-    public VType Get(KType key)
+    public VType Read(KType key)
     {
         if (this.cache.ContainsKey(key))
         {

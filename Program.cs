@@ -30,7 +30,7 @@ app.Map("{*catchall}", async (string? catchall, HttpContext context, CacheServic
 
     try
     {
-        Request cached = cache.Get(completeUrl);
+        Request cached = cache.Read(completeUrl);
         context.Response.Headers.Append("X-Cache", "HIT");
         Console.WriteLine("X-Cache: HIT");
         return Results.Content(cached.ResponseBody, "application/json", statusCode: cached.ResponseStatusCode);
