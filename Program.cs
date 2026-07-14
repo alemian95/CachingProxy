@@ -1,5 +1,6 @@
 using CachingProxy.Models;
 using CachingProxy.Services;
+using CachingProxy.Services.CacheStorage;
 
 var argsReader = new ArgsReader(args);
 string originUrl = argsReader.Read("--origin") ?? "https://dummyjson.com/";
@@ -8,6 +9,8 @@ int port = int.TryParse(portFromArgs, out int parsedPort) ? parsedPort : 5123;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// abilitare quando saranno implementati i metodi dell'interfaccia
+// builder.Services.AddSingleton<ICacheStorageDriver<string, Request>, FileStorageDriver<string, Request>>();
 builder.Services.AddSingleton<CacheService<string, Request>>();
 builder.Services.AddHttpClient();
 builder.WebHost.UseUrls($"http://localhost:{port}");

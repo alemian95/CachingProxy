@@ -1,3 +1,5 @@
+using CachingProxy.Services.CacheStorage;
+
 namespace CachingProxy.Services;
 
 class CacheService<KType, VType> where KType : notnull
@@ -11,9 +13,12 @@ class CacheService<KType, VType> where KType : notnull
     //
     // private bool persist;
 
-    public CacheService()
+    private ICacheStorageDriver<KType, VType>? storage;
+
+    public CacheService(ICacheStorageDriver<KType, VType>? storage = null)
     {
         this.cache = new Dictionary<KType, VType>();
+        this.storage = storage;
     }
 
     public VType Read(KType key)
@@ -28,6 +33,10 @@ class CacheService<KType, VType> where KType : notnull
 
     public void Store(KType key, VType value)
     {
+        if (this.storage != null)
+        {
+            this.storage.Store(key, value);
+        }
         this.cache.Add(key, value);
     }
 
