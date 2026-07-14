@@ -9,8 +9,7 @@ int port = int.TryParse(portFromArgs, out int parsedPort) ? parsedPort : 5123;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// abilitare quando saranno implementati i metodi dell'interfaccia
-// builder.Services.AddSingleton<ICacheStorageDriver<string, Request>, FileStorageDriver<string, Request>>();
+builder.Services.AddSingleton<ICacheStorageDriver<string, Request>, FileStorageDriver<string, Request>>();
 builder.Services.AddSingleton<CacheService<string, Request>>();
 builder.Services.AddHttpClient();
 builder.WebHost.UseUrls($"http://localhost:{port}");

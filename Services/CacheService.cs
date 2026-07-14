@@ -1,4 +1,5 @@
 using CachingProxy.Services.CacheStorage;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CachingProxy.Services;
 
@@ -6,13 +7,7 @@ class CacheService<KType, VType> where KType : notnull
 {
     private Dictionary<KType, VType> cache;
 
-    // IDEA PER IL FUTURO: decidere se persistere la cache (driver: redis, database, file)
-    // - Persistere significa mantenere comunque in memoria parte della cache (chiavi ad accesso più frequente)
-    // - Passare la classe driver come dipendenza
-    // - Oppure avere più CacheService
-    //
-    // private bool persist;
-
+    // cache storage driver implementato: definire qui l'algoritmo per mantenere in memory solo gli accessi più frequenti
     private ICacheStorageDriver<KType, VType>? storage;
 
     public CacheService(ICacheStorageDriver<KType, VType>? storage = null)
@@ -23,6 +18,12 @@ class CacheService<KType, VType> where KType : notnull
 
     public VType Read(KType key)
     {
+
+        if (this.storage != null)
+        {
+            return this.storage.Read(key);
+        }
+
         if (this.cache.ContainsKey(key))
         {
             return this.cache[key];
@@ -37,7 +38,10 @@ class CacheService<KType, VType> where KType : notnull
         {
             this.storage.Store(key, value);
         }
-        this.cache.Add(key, value);
+        else
+        {
+            this.cache.Add(key, value);
+        }
     }
 
 
