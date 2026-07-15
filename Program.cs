@@ -17,6 +17,14 @@ builder.WebHost.UseUrls($"http://localhost:{port}");
 
 var app = builder.Build();
 
+if (argsReader.HasFlag("--clear-cache"))
+{
+    var cacheService = app.Services.GetRequiredService<CacheService<string, Request>>();
+    cacheService.Clear();
+    return;
+}
+
+
 app.Map("{*catchall}", async (string? catchall, HttpContext context, CacheService<string, Request> cache, IHttpClientFactory clientFactory) =>
 {
 

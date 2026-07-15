@@ -52,6 +52,28 @@ class FileStorageDriver<KType, VType> : ICacheStorageDriver<KType, VType> where 
         File.WriteAllText(filePath, jsonString, Encoding.UTF8);
     }
 
+    public void Clear()
+    {
+        if (Directory.Exists(this.cacheDirectory))
+        {
+            var files = Directory.GetFiles(this.cacheDirectory, "*.json");
+            foreach (var file in files)
+            {
+                File.Delete(file);
+            }
+        }
+    }
+
+    public void Clear(KType key)
+    {
+        string filePath = this.getFilePath(key);
+
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+    }
+
     private string getFilePath(KType key)
     {
         string keyString = key.ToString() ?? string.Empty;

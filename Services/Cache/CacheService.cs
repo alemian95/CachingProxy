@@ -43,5 +43,29 @@ class CacheService<KType, VType> where KType : notnull
         }
     }
 
+    public void Clear()
+    {
+        if (this.storage != null)
+        {
+            this.storage.Clear();
+        }
+        else
+        {
+            this.cache.Clear();
+        }
+    }
+
+    public void Clear (KType key)
+    {
+        if (this.storage != null)
+        {
+            this.storage.Clear(key);
+        }
+        else
+        {
+            this.cache.Remove(key);
+        }
+    }
+
 
 }
