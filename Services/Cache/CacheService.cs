@@ -1,7 +1,6 @@
-using CachingProxy.Services.CacheStorage;
-using Microsoft.AspNetCore.Mvc;
+using CachingProxy.Services.Cache.Storage;
 
-namespace CachingProxy.Services;
+namespace CachingProxy.Services.Cache;
 
 class CacheService<KType, VType> where KType : notnull
 {

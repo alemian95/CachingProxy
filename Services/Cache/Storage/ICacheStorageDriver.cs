@@ -1,4 +1,4 @@
-namespace CachingProxy.Services.CacheStorage;
+namespace CachingProxy.Services.Cache.Storage;
 
 interface ICacheStorageDriver<KType, VType> where KType : notnull
 {

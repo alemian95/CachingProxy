@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace CachingProxy.Services.CacheStorage;
+namespace CachingProxy.Services.Cache.Storage;
 
 class FileStorageDriver<KType, VType> : ICacheStorageDriver<KType, VType> where KType : notnull
 {

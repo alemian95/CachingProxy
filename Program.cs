@@ -1,6 +1,7 @@
 using CachingProxy.Models;
-using CachingProxy.Services;
-using CachingProxy.Services.CacheStorage;
+using CachingProxy.Services.Args;
+using CachingProxy.Services.Cache;
+using CachingProxy.Services.Cache.Storage;
 
 var argsReader = new ArgsReader(args);
 string originUrl = argsReader.Read("--origin") ?? "https://dummyjson.com/";

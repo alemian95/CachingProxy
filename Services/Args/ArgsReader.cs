@@ -1,4 +1,4 @@
-namespace CachingProxy.Services;
+namespace CachingProxy.Services.Args;
 
 class ArgsReader
 {
