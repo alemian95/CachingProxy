@@ -1,6 +1,7 @@
 using CachingProxy.Models;
 using CachingProxy.Services.Args;
 using CachingProxy.Services.Cache;
+using CachingProxy.Services.Cache.Algorithm;
 using CachingProxy.Services.Cache.Storage;
 
 var argsReader = new ArgsReader(args);
@@ -11,6 +12,7 @@ int port = int.TryParse(portFromArgs, out int parsedPort) ? parsedPort : 5123;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ICacheStorageDriver<string, Request>, FileStorageDriver<string, Request>>();
+builder.Services.AddSingleton<ICacheAlgorithm<string, Request>>(provider => new LruCache<string, Request>(5));
 builder.Services.AddSingleton<CacheService<string, Request>>();
 builder.Services.AddHttpClient();
 builder.WebHost.UseUrls($"http://localhost:{port}");
@@ -30,13 +32,16 @@ app.Map("{*catchall}", async (string? catchall, HttpContext context, CacheServic
 
     var method = context.Request.Method;
     var path = catchall ?? "";
-
     var completeUrl = $"{originUrl}/{path}";
 
     if (method != "GET")
     {
         Console.WriteLine("Non-GET request forwarded without cache");
-        return Results.Ok("Non-GET request forwarded without cache");
+        var client = clientFactory.CreateClient();
+        var response = await client.GetAsync(completeUrl);
+        var body = await response.Content.ReadAsStringAsync();
+
+        return Results.Content(body, statusCode: (int)response.StatusCode);
     }
 
     try

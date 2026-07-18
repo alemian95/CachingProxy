@@ -1,70 +1,52 @@
+using CachingProxy.Services.Cache.Algorithm;
 using CachingProxy.Services.Cache.Storage;
 
 namespace CachingProxy.Services.Cache;
 
 class CacheService<KType, VType> where KType : notnull
 {
-    private Dictionary<KType, VType> cache;
 
-    // cache storage driver implementato: definire qui l'algoritmo per mantenere in memory solo gli accessi più frequenti
-    private ICacheStorageDriver<KType, VType>? storage;
+    
+    private readonly ICacheStorageDriver<KType, VType> storage;
+    private readonly ICacheAlgorithm<KType, VType> cache;
 
-    public CacheService(ICacheStorageDriver<KType, VType>? storage = null)
+    public CacheService(ICacheAlgorithm<KType, VType> cache, ICacheStorageDriver<KType, VType> storage)
     {
-        this.cache = new Dictionary<KType, VType>();
+        this.cache = cache;
         this.storage = storage;
     }
 
     public VType Read(KType key)
     {
 
-        if (this.storage != null)
+        if (this.cache.TryGet(key, out var value) && value != null)
         {
-            return this.storage.Read(key);
+            return value;
         }
 
-        if (this.cache.ContainsKey(key))
-        {
-            return this.cache[key];
-        }
+        VType storedValue = this.storage.Read(key);
 
-        throw new Exception($"Missing Key: {key}");
+        this.cache.Put(key, storedValue);
+
+        return storedValue;
     }
 
     public void Store(KType key, VType value)
     {
-        if (this.storage != null)
-        {
-            this.storage.Store(key, value);
-        }
-        else
-        {
-            this.cache.Add(key, value);
-        }
+        this.storage.Store(key, value);
+        this.cache.Put(key, value);
     }
 
     public void Clear()
     {
-        if (this.storage != null)
-        {
-            this.storage.Clear();
-        }
-        else
-        {
-            this.cache.Clear();
-        }
+        this.cache.Clear();
+        this.storage.Clear();
     }
 
     public void Clear (KType key)
     {
-        if (this.storage != null)
-        {
-            this.storage.Clear(key);
-        }
-        else
-        {
-            this.cache.Remove(key);
-        }
+        this.cache.Remove(key);
+        this.storage.Clear(key);
     }
 
 
