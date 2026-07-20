@@ -32,7 +32,7 @@ app.Map("{*catchall}", async (string? catchall, HttpContext context, CacheServic
 
     var method = context.Request.Method;
     var path = catchall ?? "";
-    var completeUrl = $"{originUrl}/{path}";
+    var completeUrl = $"{originUrl}{path}";
 
     if (method != "GET")
     {
